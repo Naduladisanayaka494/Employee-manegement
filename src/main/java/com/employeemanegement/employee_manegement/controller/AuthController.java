@@ -70,6 +70,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthenticationResponse createauthenticationtoken(@RequestBody AuthenticationRequest authenticationRequest) throws BadCredentialsException, DisabledException, UsernameNotFoundException, BadRequestException {
+        System.out.print("Hi-Login");
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(),authenticationRequest.getPassword()));
         }catch(BadCredentialsException e){
@@ -78,6 +79,7 @@ public class AuthController {
         final UserDetails userDetails= userService.userDetailService().loadUserByUsername(authenticationRequest.getEmail());
         System.out.print(userDetails.getUsername());
         Optional<User> optionalUser = userRepository.findByEmail(userDetails.getUsername());
+        System.out.print( optionalUser);
         final String jwt = jwtUtill.generateToken(userDetails);
         AuthenticationResponse authenticationResponse= new AuthenticationResponse();
         if(optionalUser.isPresent()){
@@ -94,7 +96,7 @@ public class AuthController {
         List<User> users = userRepository.findAll();
         List<UserDto> userDtos = users.stream().map(user -> {
             UserDto userDto = new UserDto();
-            userDto.setId(user.getId());
+            userDto.setId((user.getId()));
             userDto.setName(user.getName());
             userDto.setEmail(user.getEmail());
             userDto.setUserRole(user.getUserRole());

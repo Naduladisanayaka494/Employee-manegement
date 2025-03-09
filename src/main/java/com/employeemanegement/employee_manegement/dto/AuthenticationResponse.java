@@ -1,13 +1,15 @@
+
+
+// AuthenticationResponse.java
 package com.employeemanegement.employee_manegement.dto;
 
-
-import com.employeemanegement.employee_manegement.Enum.UserRole;
-import lombok.Data;
-
+        import com.employeemanegement.employee_manegement.Enum.UserRole;
+        import lombok.Data;
 
 @Data
 public class AuthenticationResponse {
     private String jwt;
+    private UserRole userRole;
 
     public String getJwt() {
         return jwt;
@@ -25,15 +27,13 @@ public class AuthenticationResponse {
         this.userRole = userRole;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    private UserRole userRole;
-    private Long userId;
+    private String userId; // Changed to String for MongoDB
 }
-
