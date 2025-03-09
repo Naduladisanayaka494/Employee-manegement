@@ -13,6 +13,9 @@ import com.employeemanegement.employee_manegement.services.auth.AuthServiceImpl;
 import com.employeemanegement.employee_manegement.services.jwt.UserServiceImpl;
 import com.employeemanegement.employee_manegement.utill.JWTUtill;
 import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -57,29 +60,6 @@ public class AuthController {
         this.departmentRepository = departmentRepository;
     }
 
-//    @PostMapping("/signup")
-//    public ResponseEntity<?> signup(@RequestBody SignUpRequest signupRequest) {
-//        if(authService.hasAdminwithemail(signupRequest.getEmail()))
-//            return new ResponseEntity<>("email already exists",HttpStatus.NOT_ACCEPTABLE);
-//        UserDto createduserdto  =authService.createEmployee(signupRequest);
-//        if(createduserdto==null) return new ResponseEntity<>(
-//                "Admin not created", HttpStatus.BAD_REQUEST
-//        );
-//        return new ResponseEntity<>(createduserdto,HttpStatus.CREATED);
-//
-//    }
-
-//    @PostMapping("/signup/admin")
-//    public ResponseEntity<?> signupAdmin(@RequestBody SignUpRequest signupRequest) {
-//        if(authService.hasAdminwithemail(signupRequest.getEmail()))
-//            return new ResponseEntity<>("email already exists",HttpStatus.NOT_ACCEPTABLE);
-//        UserDto createduserdto  =authService.createdAdmin(signupRequest);
-//        if(createduserdto==null) return new ResponseEntity<>(
-//                "Admin not created", HttpStatus.BAD_REQUEST
-//        );
-//        return new ResponseEntity<>(createduserdto,HttpStatus.CREATED);
-//
-//    }
 
     @PostMapping("/login")
     public AuthenticationResponse createauthenticationtoken(@RequestBody AuthenticationRequest authenticationRequest) throws BadCredentialsException, DisabledException, UsernameNotFoundException, BadRequestException {
@@ -105,19 +85,24 @@ public class AuthController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        List<UserDto> userDtos = users.stream().map(user -> {
+    public ResponseEntity<Page<UserDto>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findAll(pageable);
+
+        Page<UserDto> userDtoPage = userPage.map(user -> {
             UserDto userDto = new UserDto();
-            userDto.setId((user.getId()));
+            userDto.setId(user.getId());
             userDto.setName(user.getName());
             userDto.setEmail(user.getEmail());
             userDto.setUserRole(user.getUserRole());
             userDto.setProfilePhotoPath(user.getProfilePhotoPath());
             return userDto;
-        }).collect(Collectors.toList());
+        });
 
-        return ResponseEntity.ok(userDtos);
+        return ResponseEntity.ok(userDtoPage);
     }
 
     @PostMapping("/{userId}/assign-department/{departmentId}")
@@ -137,57 +122,6 @@ public class AuthController {
     }
 
 
-//    @PostMapping("/signup")
-//    public ResponseEntity<?> signup(@RequestBody SignUpRequest signupRequest, @RequestParam(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
-//        if (authService.hasAdminwithemail(signupRequest.getEmail()))
-//            return new ResponseEntity<>("email already exists", HttpStatus.NOT_ACCEPTABLE);
-//        UserDto createduserdto = authService.createEmployee(signupRequest);
-//
-//        if (createduserdto == null) return new ResponseEntity<>(
-//                "Admin not created", HttpStatus.BAD_REQUEST
-//        );
-//
-//        if (profilePhoto != null && !profilePhoto.isEmpty()) {
-//            try {
-//                String profilePhotoPath = saveProfilePhoto(profilePhoto, createduserdto.getId());
-//                User user = userRepository.findById(createduserdto.getId()).orElse(null);
-//                if (user != null) {
-//                    user.setProfilePhotoPath(profilePhotoPath);
-//                    userRepository.save(user);
-//                }
-//            } catch (IOException e) {
-//                return new ResponseEntity<>("Failed to save profile photo", HttpStatus.INTERNAL_SERVER_ERROR);
-//            }
-//        }
-//
-//        return new ResponseEntity<>(createduserdto, HttpStatus.CREATED);
-//    }
-//
-//    @PostMapping("/signup/admin")
-//    public ResponseEntity<?> signupAdmin(@RequestBody SignUpRequest signupRequest, @RequestParam(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
-//        if (authService.hasAdminwithemail(signupRequest.getEmail()))
-//            return new ResponseEntity<>("email already exists", HttpStatus.NOT_ACCEPTABLE);
-//        UserDto createduserdto = authService.createdAdmin(signupRequest);
-//        if (createduserdto == null) return new ResponseEntity<>(
-//                "Admin not created", HttpStatus.BAD_REQUEST
-//        );
-//
-//        if (profilePhoto != null && !profilePhoto.isEmpty()) {
-//            try {
-//                String profilePhotoPath = saveProfilePhoto(profilePhoto, createduserdto.getId());
-//                User user = userRepository.findById(createduserdto.getId()).orElse(null);
-//                if (user != null) {
-//                    user.setProfilePhotoPath(profilePhotoPath);
-//                    userRepository.save(user);
-//                }
-//
-//            } catch (IOException e) {
-//                return new ResponseEntity<>("Failed to save profile photo", HttpStatus.INTERNAL_SERVER_ERROR);
-//            }
-//        }
-//
-//        return new ResponseEntity<>(createduserdto, HttpStatus.CREATED);
-//    }
 @PostMapping("/signup")
 public ResponseEntity<?> signup(@ModelAttribute SignUpRequest signupRequest) { // use @ModelAttribute
     if (authService.hasAdminwithemail(signupRequest.getEmail()))
