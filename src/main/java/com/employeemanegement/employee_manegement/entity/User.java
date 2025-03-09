@@ -8,7 +8,9 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.constant.Constable;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -26,6 +28,16 @@ public class User implements UserDetails {
 
     @DBRef
     private Department department;
+
+    public String getProfilePhotoPath() {
+        return profilePhotoPath;
+    }
+
+    public void setProfilePhotoPath(String profilePhotoPath) {
+        this.profilePhotoPath = profilePhotoPath;
+    }
+
+    private String profilePhotoPath; // Added field for profile photo path
 
     @Override
     public String getPassword() {
@@ -105,4 +117,8 @@ public class User implements UserDetails {
     public void setDepartment(Department department) {
         this.department = department;
     }
+
+
+
+
 }

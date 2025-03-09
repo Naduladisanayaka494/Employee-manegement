@@ -4,11 +4,16 @@ package com.employeemanegement.employee_manegement.dto;
 
 import com.employeemanegement.employee_manegement.Enum.UserRole;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.lang.constant.Constable;
 
 @Data
 public class UserDto {
 
 
+
+    private String profilePhotoPath;
 
     private String id;
 
@@ -52,4 +57,7 @@ public class UserDto {
 
     private UserRole userRole;
 
+
+    public void setProfilePhotoPath(Constable profilePhotoPath) {
+    }
 }

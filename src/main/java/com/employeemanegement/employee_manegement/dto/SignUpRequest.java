@@ -1,12 +1,16 @@
 package com.employeemanegement.employee_manegement.dto;
 
+
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class SignUpRequest {
     private String name;
     private String email;
     private String password;
+    private MultipartFile profilePhoto; // Added profile photo field
+
     public String getName() {
         return name;
     }
@@ -31,7 +35,11 @@ public class SignUpRequest {
         this.password = password;
     }
 
+    public MultipartFile getProfilePhoto() {
+        return profilePhoto;
+    }
 
+    public void setProfilePhoto(MultipartFile profilePhoto) {
+        this.profilePhoto = profilePhoto;
+    }
 }
-
-
