@@ -5,7 +5,9 @@ import com.employeemanegement.employee_manegement.dto.AuthenticationRequest;
 import com.employeemanegement.employee_manegement.dto.AuthenticationResponse;
 import com.employeemanegement.employee_manegement.dto.SignUpRequest;
 import com.employeemanegement.employee_manegement.dto.UserDto;
+import com.employeemanegement.employee_manegement.entity.Department;
 import com.employeemanegement.employee_manegement.entity.User;
+import com.employeemanegement.employee_manegement.repositories.DepartmentRepository;
 import com.employeemanegement.employee_manegement.repositories.UserRepository;
 import com.employeemanegement.employee_manegement.services.auth.AuthServiceImpl;
 import com.employeemanegement.employee_manegement.services.jwt.UserServiceImpl;
@@ -36,12 +38,16 @@ public class AuthController {
     private final JWTUtill jwtUtill;
     private  final UserRepository userRepository;
 
-    public AuthController(AuthServiceImpl authService, AuthenticationManager authenticationManager, UserServiceImpl userService, JWTUtill jwtUtill, UserRepository userRepository) {
+    private final DepartmentRepository departmentRepository;
+
+
+    public AuthController(AuthServiceImpl authService, AuthenticationManager authenticationManager, UserServiceImpl userService, JWTUtill jwtUtill, UserRepository userRepository, DepartmentRepository departmentRepository) {
         this.authService = authService;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtUtill = jwtUtill;
         this.userRepository = userRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     @PostMapping("/signup")
@@ -104,5 +110,21 @@ public class AuthController {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(userDtos);
+    }
+
+    @PostMapping("/{userId}/assign-department/{departmentId}")
+    public ResponseEntity<User> assignDepartmentToUser(@PathVariable String userId, @PathVariable String departmentId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<Department> departmentOptional = departmentRepository.findById(departmentId);
+
+        if (userOptional.isPresent() && departmentOptional.isPresent()) {
+            User user = userOptional.get();
+            Department department = departmentOptional.get();
+            user.setDepartment(department);
+            userRepository.save(user);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

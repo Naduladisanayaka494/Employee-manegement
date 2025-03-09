@@ -4,6 +4,7 @@ import com.employeemanegement.employee_manegement.Enum.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,9 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private UserRole userRole;
+
+    @DBRef
+    private Department department;
 
     @Override
     public String getPassword() {
@@ -92,5 +96,13 @@ public class User implements UserDetails {
 
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 }
